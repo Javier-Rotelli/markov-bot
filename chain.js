@@ -19,11 +19,11 @@ export function pickOneByWeight (anObj) {
 const isType = (t) => Object.prototype.toString.call(t).slice(8, -1).toLowerCase()
 
 class MarkovChain {
-  constructor (contents, normFn = (word) => word.replace(/\.$/ig, '')) {
+  constructor (contents, normFn = (w) => w.toLowerCase()) {
     this.wordBank = Object.create(null)
     this.sentence = ''
     this._normalizeFn = normFn
-    this.parseBy = /(?:\?|\n)/ig
+    this.parseBy = /(?:\?)/ig
     this.parse(contents)
   }
 
@@ -35,7 +35,7 @@ class MarkovChain {
   }
 
   endFn () {
-    return this.sentence.endsWith('FINDECANCION')
+    return this.sentence.split(' ').length > 7
   }
 
   process () {
@@ -51,7 +51,7 @@ class MarkovChain {
 
   parse (text = '', parseBy = this.parseBy) {
     text.split(parseBy).forEach((lines) => {
-      const words = lines.split(' ').filter((w) => w.trim() !== '')
+      const words = lines.split(/ |$\n/).filter((w) => w.trim() !== '')
 
       for (let i = 0; i < words.length - 1; i++) {
         const curWord = this._normalize(words[i])
